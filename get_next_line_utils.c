@@ -6,11 +6,12 @@
 /*   By: hbrouwer <hbrouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/28 15:18:25 by hbrouwer      #+#    #+#                 */
-/*   Updated: 2022/10/31 20:24:47 by hbrouwer      ########   odam.nl         */
+/*   Updated: 2022/11/02 19:23:53 by hbrouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 int     ft_strlen(char *str)
 {
@@ -29,6 +30,11 @@ char	*ft_strjoin(char *s1, char *s2)
 	int		i;
 	int		j;
 
+	// printf("joining: {%s} & {%s}\n", s1, s2);
+	if (!s1)
+		return (s2);
+	if (!s2)
+		return (s1);
 	len = (ft_strlen(s1) + ft_strlen(s2) + 1);
 	dest = (char *) malloc(len * sizeof(char));
 	if (dest == NULL)
@@ -49,4 +55,21 @@ char	*ft_strjoin(char *s1, char *s2)
 	free(s1);
 	free(s2);
 	return (dest);
+}
+
+void	*ft_calloc(size_t count, size_t size)
+{
+	void	*ptr;
+	size_t	i;
+
+	ptr = malloc(count * size);
+	if (ptr == NULL)
+		return (NULL);
+	i = 0;
+	while (i < (size * count))
+	{
+		*((char *)ptr + i) = 0;
+		i++;
+	}
+	return (ptr);
 }

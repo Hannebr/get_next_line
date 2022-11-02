@@ -6,60 +6,74 @@
 /*   By: hbrouwer <hbrouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/10/28 14:04:16 by hbrouwer      #+#    #+#                 */
-/*   Updated: 2022/10/31 20:25:25 by hbrouwer      ########   odam.nl         */
+/*   Updated: 2022/11/02 19:43:42 by hbrouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
 #include "get_next_line.h"
 
 char	*get_next_line(int fd)
 {
-	char		*line;
-	char		*current_line;
+	static char	*buffer;
+	static char	*line;
 	char		*next_line;
-	
+	static int	line_len;
 
-	line = (char *) malloc(BUFFER_SIZE * sizeof(char));
-	if (line == NULL)
+	if (fd == -1)
 		return (NULL);
-	read(fd, line, BUFFER_SIZE);
-	next_line = find_newline(line);
+	line = NULL;
+	if (!buffer)
+	{
+		buffer = (char *) ft_calloc((BUFFER_SIZE + 1), sizeof(char));
+		if (buffer == NULL)
+			return (NULL);
+		read(fd, buffer, BUFFER_SIZE);			
+		line_len = 0;
+	}
+	next_line = find_newline(buffer, &line_len);
 	while (1)
 	{
-		if (ft_strlen(next_line) < BUFFER_SIZE)
-			return (next_line);
+		line = ft_strjoin(line, next_line);
+		if (line_len < BUFFER_SIZE)
+		{
+			line_len++;
+			return (line);
+		}
 		else
 		{
-			line = ft_strjoin(line, next_line);
-			current_line = (char *) malloc(BUFFER_SIZE * sizeof(char));
-			read(fd, current_line, BUFFER_SIZE);
-			next_line = find_newline(current_line);
+			buffer = (char *) ft_calloc((BUFFER_SIZE + 1), sizeof(char));
+			if (buffer == NULL)
+				return (NULL);
+			read(fd, buffer, BUFFER_SIZE);
+			line_len = 0;
+			next_line = find_newline(buffer, &line_len);
 		}
 	}
 }
 
-char	*find_newline(char *line)
+char	*find_newline(char *line, int *line_len)
 {
-	static int    read_bytes;
 	int            i;
 	char          *str;
 	int           j;
 	
-	i = read_bytes;
-	while (line[i] != '\n' && line[i] != '\0')
+	i = *line_len;
+	while (!(line[i] == '\n' || line[i] == '\0'))
 		i++;
-	str = (char *) malloc((i - read_bytes + 1) * sizeof(char));
+	str = (char *) ft_calloc((i - *line_len + 1), sizeof(char));
+	if (str == NULL)
+		return (NULL);
 	j = 0;
-	while (read_bytes < i)
+	while (*line_len < i)
 	{
-		str[j] = line[read_bytes];
+		str[j] = line[*line_len];
 		j++;
-		read_bytes++;
+		(*line_len)++;
 	}
-	free(line);
-	str[j] = 0;
-	read_bytes++;
+	if (j == BUFFER_SIZE)
+		free(line);
 	return (str);
 }
