@@ -13,10 +13,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int     ft_strlen(char *str)
+int	ft_strlen(char *str)
 {
 	int	i;
-	
+
 	i = 0;
 	while (str[i])
 		i++;
@@ -30,7 +30,6 @@ char	*ft_strjoin(char *s1, char *s2)
 	int		i;
 	int		j;
 
-	// printf("joining: {%s} & {%s}\n", s1, s2);
 	if (!s1)
 		return (s2);
 	if (!s2)
@@ -38,13 +37,13 @@ char	*ft_strjoin(char *s1, char *s2)
 	len = (ft_strlen(s1) + ft_strlen(s2) + 1);
 	dest = (char *) malloc(len * sizeof(char));
 	if (dest == NULL)
-		return (NULL);
+		return (free(s1), free(s2), NULL);
 	i = 0;
 	j = 0;
 	while (s1[i])
 	{
 		dest[i] = s1[i];
-		i++; 
+		i++;
 	}
 	while (s2[j])
 	{
